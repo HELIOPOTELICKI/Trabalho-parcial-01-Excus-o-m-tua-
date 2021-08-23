@@ -13,7 +13,6 @@ public class Processo {
 	private Thread utilizaRecurso = new Thread();
 	private Conexao conexao = new Conexao();
 
-	// variaveis utilizadas apenas pelo coordenador
 	private LinkedList<Processo> listaDeEspera;
 	private boolean recursoEmUso;
 
@@ -22,7 +21,7 @@ public class Processo {
 
 	public Processo(int pid) {
 		this.pid = pid;
-		setEhCoordenador(false);
+		setCoordenador(false);
 	}
 
 	public int getPid() {
@@ -33,7 +32,7 @@ public class Processo {
 		return ehCoordenador;
 	}
 
-	public void setEhCoordenador(boolean ehCoordenador) {
+	public void setCoordenador(boolean ehCoordenador) {
 		this.ehCoordenador = ehCoordenador;
 		if (this.ehCoordenador) {
 			listaDeEspera = new LinkedList<>();
@@ -80,7 +79,7 @@ public class Processo {
 
 		if (coordenador == null) {
 			Eleicao eleicao = new Eleicao();
-			coordenador = eleicao.realizarEleicao(this.getPid());
+			coordenador = eleicao.novaEleicao(this.getPid());
 		}
 		return coordenador;
 	}

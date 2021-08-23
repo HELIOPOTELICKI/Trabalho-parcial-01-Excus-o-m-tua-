@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * TRABALHO PRÁTICO 01 – ALGORITMOS DE EXCLUSÃO MÚTUA
@@ -7,27 +8,16 @@ import java.util.LinkedList;
  */
 public class Eleicao {
 
-	public Processo realizarEleicao(int idProcessoIniciador) {
+	public Processo novaEleicao(int idProcessoIniciador) {
 		LinkedList<Integer> idProcessosConsultados = new LinkedList<>();
 
 		for (Processo p : ControladorDeProcessos.getProcessosAtivos())
 			consultarProcesso(p.getPid(), idProcessosConsultados);
 
-		int idNovoCoordenador = idProcessoIniciador;
-
-		for (Integer id : idProcessosConsultados) {
-			if (id > idNovoCoordenador)
-				idNovoCoordenador = id;
-		}
+		Random rand = new Random();
+		int idNovoCoordenador = idProcessosConsultados.get(rand.nextInt(idProcessosConsultados.size()));
 
 		Processo coordenador = atualizarCoordenador(idNovoCoordenador);
-
-		if (coordenador == null) {
-			for (Processo p : ControladorDeProcessos.getProcessosAtivos()) {
-				if (p.getPid() == idProcessoIniciador)
-					return p;
-			}
-		}
 
 		return coordenador;
 	}
@@ -40,10 +30,10 @@ public class Eleicao {
 		Processo coordenador = null;
 		for (Processo p : ControladorDeProcessos.getProcessosAtivos()) {
 			if (p.getPid() == idNovoCoordenador) {
-				p.setEhCoordenador(true);
+				p.setCoordenador(true);
 				coordenador = p;
 			} else {
-				p.setEhCoordenador(false);
+				p.setCoordenador(false);
 			}
 		}
 

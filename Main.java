@@ -33,7 +33,7 @@ public class Main {
 						Processo processo = new Processo(gerarIdUnico(processosAtivos));
 
 						if (processosAtivos.isEmpty())
-							processo.setEhCoordenador(true);
+							processo.setCoordenador(true);
 
 						processosAtivos.add(processo);
 					}
