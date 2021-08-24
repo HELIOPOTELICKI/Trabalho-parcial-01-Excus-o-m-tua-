@@ -14,7 +14,6 @@ public class Main {
 	private static final int MORRE = 60000;
 	private static final int CONSUMO_MIN = 5000;
 	private static final int CONSUMO_MAX = 10000;
-
 	private static final Object lock = new Object();
 
 	public static void main(String[] args) {
