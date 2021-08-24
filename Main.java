@@ -11,7 +11,7 @@ public class Main {
 
 	private static final int ADICIONA = 4000;
 	private static final int INATIVO_PROCESSO = 8000;
-	private static final int INATIVO_COORDENADOR = 30000;
+	private static final int MORRE = 60000;
 	private static final int CONSOME_RECURSO_MIN = 5000;
 	private static final int CONSOME_RECURSO_MAX = 10000;
 
@@ -45,18 +45,6 @@ public class Main {
 		}).start();
 	}
 
-	private static int gerarIdUnico(ArrayList<Processo> processosAtivos) {
-		Random random = new Random();
-		int idRandom = random.nextInt(1000);
-
-		for (Processo p : processosAtivos) {
-			if (p.getPid() == idRandom)
-				return gerarIdUnico(processosAtivos);
-		}
-
-		return idRandom;
-	}
-
 	public static void inativarProcesso(ArrayList<Processo> processosAtivos) {
 		new Thread(new Runnable() {
 			public void run() {
@@ -82,7 +70,7 @@ public class Main {
 			@Override
 			public void run() {
 				while (true) {
-					esperar(INATIVO_COORDENADOR);
+					esperar(MORRE);
 
 					synchronized (lock) {
 						Processo coordenador = null;
@@ -92,7 +80,7 @@ public class Main {
 						}
 						if (coordenador != null) {
 							coordenador.destruir();
-							System.out.println("Coordenador " + coordenador + " morreu. F");
+							System.out.printf("Coordenador %s morreu. F\n", coordenador);
 						}
 					}
 				}
@@ -123,9 +111,21 @@ public class Main {
 		}).start();
 	}
 
-	private static void esperar(int segundos) {
+	private static int gerarIdUnico(ArrayList<Processo> processosAtivos) {
+		Random random = new Random();
+		int idRandom = random.nextInt(1000);
+
+		for (Processo p : processosAtivos) {
+			if (p.getPid() == idRandom)
+				return gerarIdUnico(processosAtivos);
+		}
+
+		return idRandom;
+	}
+
+	private static void esperar(int ms) {
 		try {
-			Thread.sleep(segundos);
+			Thread.sleep(ms);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

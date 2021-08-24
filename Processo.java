@@ -16,8 +16,8 @@ public class Processo {
 	private LinkedList<Processo> listaDeEspera;
 	private boolean recursoEmUso;
 
-	private static final int USO_PROCESSO_MIN = 10000;
-	private static final int USO_PROCESSO_MAX = 20000;
+	private static final int min = 5000;
+	private static final int max = 15000;
 
 	public Processo(int pid) {
 		this.pid = pid;
@@ -88,31 +88,31 @@ public class Processo {
 		if (ControladorDeProcessos.isUsandoRecurso(this) || this.isCoordenador())
 			return;
 
-		String resultado = conexao.realizarRequisicao("Processo " + this + " quer consumir o recurso.\n");
+		String resultado = conexao.realizarRequisicao("Processo " + this + " solicita permição.\n");
 
-		System.out.println("Resultado da requisicao do processo " + this + ": " + resultado);
+		System.out.printf("Permição para %s: %s\n", this, resultado);
 
-		if (resultado.equals(Conexao.PERMITIR_ACESSO))
+		if (resultado.equals(Conexao.PERMITIDO))
 			utilizarRecurso(this);
-		else if (resultado.equals(Conexao.NEGAR_ACESSO))
+		else if (resultado.equals(Conexao.NEGADO))
 			adicionarNaListaDeEspera(this);
 	}
 
 	private void adicionarNaListaDeEspera(Processo processoEmEspera) {
 		getListaDeEspera().add(processoEmEspera);
 
-		System.out.println("Processo " + this + " foi adicionado na lista de espera.");
-		System.out.println("Lista de espera: " + getListaDeEspera());
+		System.out.printf("Processo %s, adicionado na lista de espera.\n", this);
+		System.out.printf("Em espera: %s\n", getListaDeEspera());
 	}
 
 	private void utilizarRecurso(Processo processo) {
 		Random random = new Random();
-		int randomUsageTime = USO_PROCESSO_MIN + random.nextInt(USO_PROCESSO_MAX - USO_PROCESSO_MIN);
+		int randomUsageTime = min + random.nextInt(max - min);
 
 		utilizaRecurso = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Processo " + processo + " está consumindo o recurso.");
+				System.out.printf("Processo %s utilizando do recurso.\n", processo);
 				setRecursoEmUso(true, processo);
 
 				try {
@@ -120,7 +120,7 @@ public class Processo {
 				} catch (InterruptedException e) {
 				}
 
-				System.out.println("Processo " + processo + " parou de consumir o recurso.");
+				System.out.printf("Processo %s terminou de consumir o recurso.\n", processo);
 				processo.liberarRecurso();
 			}
 		});
@@ -133,8 +133,8 @@ public class Processo {
 		if (!isListaDeEsperaVazia()) {
 			Processo processoEmEspera = getListaDeEspera().removeFirst();
 			processoEmEspera.acessarRecursoCompartilhado();
-			System.out.println("Processo " + processoEmEspera + " foi removido da lista de espera.");
-			System.out.println("Lista de espera: " + getListaDeEspera());
+			System.out.printf("Processo %s saiu da espera.\n", processoEmEspera);
+			System.out.printf("Em espera: %s\n", getListaDeEspera());
 		}
 	}
 

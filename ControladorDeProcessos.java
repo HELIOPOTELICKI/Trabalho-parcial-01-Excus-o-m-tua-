@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * TRABALHO PRÁTICO 01 – ALGORITMOS DE EXCLUSÃO MÚTUA

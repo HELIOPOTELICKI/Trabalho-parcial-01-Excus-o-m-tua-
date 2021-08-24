@@ -8,22 +8,22 @@ import java.util.Random;
  */
 public class Eleicao {
 
-	public Processo novaEleicao(int idProcessoIniciador) {
-		LinkedList<Integer> idProcessosConsultados = new LinkedList<>();
+	public Processo novaEleicao(int idPIniciador) {
+		LinkedList<Integer> idPConsultados = new LinkedList<>();
 
 		for (Processo p : ControladorDeProcessos.getProcessosAtivos())
-			consultarProcesso(p.getPid(), idProcessosConsultados);
+			consultarProcesso(p.getPid(), idPConsultados);
 
 		Random rand = new Random();
-		int idNovoCoordenador = idProcessosConsultados.get(rand.nextInt(idProcessosConsultados.size()));
+		int idNovoCoordenador = idPConsultados.get(rand.nextInt(idPConsultados.size()));
 
 		Processo coordenador = atualizarCoordenador(idNovoCoordenador);
 
 		return coordenador;
 	}
 
-	private void consultarProcesso(int idProcesso, LinkedList<Integer> processosConsultados) {
-		processosConsultados.add(idProcesso);
+	private void consultarProcesso(int idProcesso, LinkedList<Integer> pConsultados) {
+		pConsultados.add(idProcesso);
 	}
 
 	private Processo atualizarCoordenador(int idNovoCoordenador) {
