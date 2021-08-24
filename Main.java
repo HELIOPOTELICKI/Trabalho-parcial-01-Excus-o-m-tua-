@@ -9,11 +9,11 @@ import java.util.Random;
 
 public class Main {
 
-	private static final int ADICIONA = 4000;
-	private static final int INATIVO_PROCESSO = 8000;
+	private static final int ADD = 4000;
+	private static final int PROCESS_INTV = 8000;
 	private static final int MORRE = 60000;
-	private static final int CONSOME_RECURSO_MIN = 5000;
-	private static final int CONSOME_RECURSO_MAX = 10000;
+	private static final int CONSUMO_MIN = 5000;
+	private static final int CONSUMO_MAX = 10000;
 
 	private static final Object lock = new Object();
 
@@ -38,7 +38,7 @@ public class Main {
 						processosAtivos.add(processo);
 					}
 
-					esperar(ADICIONA);
+					esperar(ADD);
 
 				}
 			}
@@ -49,7 +49,7 @@ public class Main {
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
-					esperar(INATIVO_PROCESSO);
+					esperar(PROCESS_INTV);
 
 					synchronized (lock) {
 						if (!processosAtivos.isEmpty()) {
@@ -95,8 +95,8 @@ public class Main {
 				Random random = new Random();
 				int intervalo = 0;
 				while (true) {
-					intervalo = random.nextInt(CONSOME_RECURSO_MAX - CONSOME_RECURSO_MIN);
-					esperar(CONSOME_RECURSO_MIN + intervalo);
+					intervalo = random.nextInt(CONSUMO_MAX - CONSUMO_MIN);
+					esperar(CONSUMO_MIN + intervalo);
 
 					synchronized (lock) {
 						if (!processosAtivos.isEmpty()) {
