@@ -24,6 +24,25 @@ public class Processo {
 		setCoordenador(false);
 	}
 
+	private void startAskForConsumeResource() {
+		final Process process = this;
+		new Thread(new Runnable() {
+			public void run() {
+				while (true) {
+					if (Cluster.getInstance().getCoordinator() != null
+							&& !Cluster.getInstance().getCoordinator().isProcessInQueue(process)) {
+						System.out.println("Processo: " + process.getPid() + " / Solicita consumir recursos");
+						Cluster.getInstance().getCoordinator().requestConsume(process);
+					}
+
+					ThreadUtil.delay(getRandomAskInterval());
+
+				}
+			}
+
+		}).start();
+	}
+
 	public int getPid() {
 		return pid;
 	}
