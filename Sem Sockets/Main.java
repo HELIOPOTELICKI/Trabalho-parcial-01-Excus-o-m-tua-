@@ -7,15 +7,21 @@
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Inicializando...");
+        System.out.println("\nInicializando...\n");
 
-        Process a = Cluster.getInstance().createNewProcess();
-        Process b = Cluster.getInstance().createNewProcess();
-        Process c = Cluster.getInstance().createNewProcess();
-        Process p = Cluster.getInstance().createNewProcess();
-        Cluster.getInstance().setCoordinator(p);
-        System.out.printf("Coordenador eleito: %s\n", p.getPid());
+        for (int i = 0; i < 5; i++) {
+            Cluster.getInstance().createNewProcess();
+        }
 
-        new TimerScheduler();
+        Cluster.getInstance().invokeElection();
+
+        while (true) {
+            try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+            }
+            new TimerScheduler();
+        }
+
     }
 }

@@ -33,7 +33,7 @@ public class Cluster {
 
     public Process createNewProcess() {
         Process process = new Process(generateValidId());
-        System.out.printf("Novo processo criado: %s\n", process.getPid());
+        System.out.printf("Novo processo criado: %s\n\n", process.getPid());
         processes.add(process);
         return process;
     }
@@ -45,8 +45,9 @@ public class Cluster {
         invokeElection();
     }
 
-    private void invokeElection() {
-        System.out.println("<<< Eleição >>>");
+    public void invokeElection() {
+        System.out.println("\n<<< Eleição >>>\n");
+        System.out.printf("Processos: %s\n", getProcessList());
         Process randomProcess = processes.get(new Random().nextInt(processes.size()));
         setCoordinator(randomProcess.election());
     }
@@ -66,6 +67,20 @@ public class Cluster {
             break;
         }
         return id;
+    }
+
+    public String getProcessList() {
+        String processes = "< ";
+
+        for (Process p : this.processes) {
+            if (this.processes.get(this.processes.size() - 1) == p) {
+                processes += String.format("%s >", p.getPid());
+            } else {
+                processes += String.format("%s - ", p.getPid());
+            }
+        }
+
+        return processes;
     }
 
 }

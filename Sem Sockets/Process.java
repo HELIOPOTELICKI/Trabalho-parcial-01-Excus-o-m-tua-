@@ -1,3 +1,4 @@
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -12,7 +13,8 @@ public class Process {
     private static Integer MAXIMUM_SECONDS_CONSUME = 15;
     private static Integer MINIMUM_SECONDS_INTERVAL = 10;
     private static Integer MAXIMUM_SECONDS_INTERVAL = 25;
-    private Thread resources = new Thread();
+    private Thread askForConsumeResource;
+    private Thread consumeResource;
     private int pid;
 
     public Process(int pid) {
@@ -21,35 +23,37 @@ public class Process {
     }
 
     private void startAskForConsumeResource() {
-        int randomUsageTime = getRandomAskInterval();
         final Process process = this;
 
-        resources = new Thread(new Runnable() {
+        askForConsumeResource = new Thread(new Runnable() {
+            int randomUsageTime;
+
             @Override
             public void run() {
+                randomUsageTime = getRandomAskInterval();
                 while (true) {
+
+                    try {
+                        Thread.sleep(randomUsageTime);
+                    } catch (InterruptedException e) {
+                    }
+
                     try {
                         if (Cluster.getInstance().getCoordinator().getProcess().getPid() != process.getPid()) {
                             if (Cluster.getInstance().getCoordinator() != null
                                     && !Cluster.getInstance().getCoordinator().isProcessInQueue(process)) {
-                                System.out.printf("Processo: %s solicita consumir recursos\n", process.getPid());
+                                System.out.printf("%s - Processo: %s solicita consumir recursos\n", getTimeNow(),
+                                        process.getPid());
                                 Cluster.getInstance().getCoordinator().requestConsume(process);
-                            } else {
-                                System.out.printf("Em espera: %s\n", Cluster.getInstance().getCoordinator().getQueue());
                             }
                         }
                     } catch (NullPointerException e) {
-                    }
-                    try {
-                        Thread.sleep(randomUsageTime);
-                    } catch (InterruptedException e) {
-
                     }
                 }
             }
         });
 
-        resources.start();
+        askForConsumeResource.start();
 
     }
 
@@ -63,37 +67,41 @@ public class Process {
             }
 
         }
-        System.out.printf("Novo coordenador: %s\n", newCoordinator.getPid());
+        System.out.printf("Coordenador eleito: %s\n\n", newCoordinator.getPid());
         return newCoordinator;
     }
 
     public void ConsumeResource() {
         final Process process = this;
 
-        resources = new Thread(new Runnable() {
+        consumeResource = new Thread(new Runnable() {
+            int randomConsumeTime;
+
             @Override
             public void run() {
-                int randomConsumeTime = getRandomConsumeTime();
+                randomConsumeTime = getRandomConsumeTime();
+
                 try {
                     Thread.sleep(randomConsumeTime);
                 } catch (InterruptedException e) {
                 }
+
                 Cluster.getInstance().getCoordinator().notifyStopConsume();
-                System.out.printf("Processo %s terminou de consumir o recurso. Consumiu por %ss\n", process.getPid(),
-                        (randomConsumeTime / 1000));
+                System.out.printf("\nProcesso %s terminou de consumir o recurso. Consumiu por %ss\n\n",
+                        process.getPid(), (randomConsumeTime / 1000));
 
             }
         });
-        resources.start();
+        consumeResource.start();
     }
 
     private int getRandomAskInterval() {
-        return ((MINIMUM_SECONDS_INTERVAL + new Random().nextInt(MAXIMUM_SECONDS_INTERVAL - MINIMUM_SECONDS_INTERVAL))
+        return ((MINIMUM_SECONDS_INTERVAL + (new Random().nextInt(MAXIMUM_SECONDS_INTERVAL - MINIMUM_SECONDS_INTERVAL)))
                 * 1000);
     }
 
     private int getRandomConsumeTime() {
-        return ((MINIMUM_SECONDS_CONSUME + new Random().nextInt(MAXIMUM_SECONDS_CONSUME - MINIMUM_SECONDS_CONSUME))
+        return ((MINIMUM_SECONDS_CONSUME + (new Random().nextInt(MAXIMUM_SECONDS_CONSUME - MINIMUM_SECONDS_CONSUME)))
                 * 1000);
     }
 
@@ -103,6 +111,16 @@ public class Process {
 
     public int getPid() {
         return this.pid;
+    }
+
+    private String getTimeNow() {
+        Calendar rightNow = Calendar.getInstance();
+        int hours = rightNow.get(Calendar.HOUR);
+        int minutes = rightNow.get(Calendar.MINUTE);
+        int seconds = rightNow.get(Calendar.SECOND);
+        String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        return time;
     }
 
 }
