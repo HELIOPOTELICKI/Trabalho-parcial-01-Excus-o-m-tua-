@@ -56,4 +56,18 @@ public class Coordinator {
         queue.add(process);
     }
 
+    public String getQueue() {
+        String queue = "< ";
+
+        for (Process p : this.queue) {
+            if (((LinkedList<Process>) this.queue).get(this.queue.size() - 1) == p) {
+                queue += String.format("%s >", p.getPid());
+            } else {
+                queue += String.format("%s - ", p.getPid());
+            }
+        }
+
+        return queue;
+    }
+
 }

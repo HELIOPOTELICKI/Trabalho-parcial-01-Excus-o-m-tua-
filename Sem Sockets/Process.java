@@ -28,21 +28,25 @@ public class Process {
             @Override
             public void run() {
                 while (true) {
-                    if (Cluster.getInstance().getCoordinator() != null
-                            && !Cluster.getInstance().getCoordinator().isProcessInQueue(process)) {
-                        System.out.printf("Processo: %s solicita consumir recursos\n", process.getPid());
-                        Cluster.getInstance().getCoordinator().requestConsume(process);
+                    try {
+                        if (Cluster.getInstance().getCoordinator().getProcess().getPid() != process.getPid()) {
+                            if (Cluster.getInstance().getCoordinator() != null
+                                    && !Cluster.getInstance().getCoordinator().isProcessInQueue(process)) {
+                                System.out.printf("Processo: %s solicita consumir recursos\n", process.getPid());
+                                Cluster.getInstance().getCoordinator().requestConsume(process);
+                            } else {
+                                System.out.printf("Em espera: %s\n", Cluster.getInstance().getCoordinator().getQueue());
+                            }
+                        }
+                    } catch (NullPointerException e) {
                     }
-
                     try {
                         Thread.sleep(randomUsageTime);
                     } catch (InterruptedException e) {
-                        System.out.printf("Processo %s terminou de consumir o recurso.\n", process.getPid());
-                    }
 
+                    }
                 }
             }
-
         });
 
         resources.start();

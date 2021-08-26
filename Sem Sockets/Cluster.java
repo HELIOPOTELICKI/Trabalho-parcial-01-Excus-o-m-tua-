@@ -40,7 +40,7 @@ public class Cluster {
 
     public void removeCoordinator() {
         System.out.printf("Coordenador %s morreu. F\n", coordinator.getProcess().getPid());
-        processes.remove(getCoordinator().getProcess());
+        processes.remove(this.getCoordinator().getProcess());
         this.coordinator = null;
         invokeElection();
     }
