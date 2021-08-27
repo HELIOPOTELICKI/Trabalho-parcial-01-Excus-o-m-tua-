@@ -54,7 +54,7 @@ public class Coordinator {
             queue = new LinkedList<Process>();
         }
         queue.add(process);
-        System.out.printf("Processo %s adicionado na fila: %s\n", process.getPid(), this.getQueue());
+        System.out.printf("%s - Processo %s adicionado na fila: %s\n", process.getTimeNow(), process.getPid(), this.getQueue());
     }
 
     public String getQueue() {

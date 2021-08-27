@@ -33,7 +33,6 @@ public class Cluster {
 
     public Process createNewProcess() {
         Process process = new Process(generateValidId());
-        System.out.printf("Novo processo criado: %s\n\n", process.getPid());
         processes.add(process);
         return process;
     }

@@ -18,6 +18,7 @@ public class Process {
     private int pid;
 
     public Process(int pid) {
+        System.out.printf("%s - Novo processo criado: %s\n", getTimeNow(), pid);
         setPid(pid);
         startAskForConsumeResource();
     }
@@ -26,15 +27,16 @@ public class Process {
         final Process process = this;
 
         askForConsumeResource = new Thread(new Runnable() {
-            int randomUsageTime;
-
             @Override
             public void run() {
-                randomUsageTime = getRandomAskInterval();
                 while (true) {
 
                     try {
+                        int randomUsageTime;
+                        randomUsageTime = getRandomAskInterval();
+                        System.out.printf("%s - Processo " + process.getPid() + " vai aguardar " + (randomUsageTime / 1000) + "s antes de tentar consumir o recurso\n", getTimeNow());
                         Thread.sleep(randomUsageTime);
+
                     } catch (InterruptedException e) {
                     }
 
@@ -42,7 +44,7 @@ public class Process {
                         if (Cluster.getInstance().getCoordinator().getProcess().getPid() != process.getPid()) {
                             if (Cluster.getInstance().getCoordinator() != null
                                     && !Cluster.getInstance().getCoordinator().isProcessInQueue(process)) {
-                                System.out.printf("%s - Processo: %s solicita consumir recursos\n", getTimeNow(),
+                                System.out.printf("%s - Processo %s solicita consumir recurso\n", getTimeNow(),
                                         process.getPid());
                                 Cluster.getInstance().getCoordinator().requestConsume(process);
                             }
@@ -67,7 +69,7 @@ public class Process {
             }
 
         }
-        System.out.printf("Coordenador eleito: %s\n\n", newCoordinator.getPid());
+        System.out.printf("%s - Coordenador eleito: %s\n", getTimeNow(), newCoordinator.getPid());
         return newCoordinator;
     }
 
@@ -87,8 +89,8 @@ public class Process {
                 }
 
                 Cluster.getInstance().getCoordinator().notifyStopConsume();
-                System.out.printf("\nProcesso %s terminou de consumir o recurso. Consumiu por %ss\n\n",
-                        process.getPid(), (randomConsumeTime / 1000));
+                System.out.printf("%s - Processo %s terminou de consumir o recurso. Consumiu por %ss\n\n",
+                        getTimeNow(), process.getPid(), (randomConsumeTime / 1000));
 
             }
         });
@@ -113,7 +115,7 @@ public class Process {
         return this.pid;
     }
 
-    private String getTimeNow() {
+    public String getTimeNow() {
         Calendar rightNow = Calendar.getInstance();
         int hours = rightNow.get(Calendar.HOUR);
         int minutes = rightNow.get(Calendar.MINUTE);

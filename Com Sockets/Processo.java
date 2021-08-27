@@ -25,7 +25,7 @@ public class Processo {
 	}
 
 	private void startAskForConsumeResource() {
-		final Process process = this;
+		final Processo process = this;
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
